@@ -1,0 +1,5 @@
+- from:
+    uri: knative:channel/mers-handler
+    steps:
+      - to: "log:info"
+      - to: "kafka:my-topic?brokers=my-cluster-kafka-bootstrap.streams.svc:9092"

@@ -1,0 +1,22 @@
+apiVersion: sources.eventing.knative.dev/v1alpha1
+kind: CamelSource
+metadata:
+  name: simulator-cloud
+  namespace: mydemo
+spec:
+  source:
+    flow:
+      from:
+        uri: timer:tick?period=1s
+        steps:
+           - set-body:
+                constant: '{ "type": "Virus", "genuses":"Novalvirus" }'
+           - set-header:
+                name: CE-Type
+                constant: dev.knative.humancontact
+           - to: log:info
+  sink:
+    ref:
+      apiVersion: messaging.knative.dev/v1alpha1
+      kind: InMemoryChannel
+      name: humancontact
