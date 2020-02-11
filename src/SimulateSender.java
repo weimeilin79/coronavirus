@@ -26,8 +26,8 @@ public class SimulateSender extends RouteBuilder {
 
       SingalInput input = new SingalInput();
       Random generator = new Random();
-      String[] genuses = {"Alphacoronavirus","Betacoronavirus","Novalvirus"};
-      //,"MERSvirus"
+      String[] genuses = {"Alphacoronavirus","Betacoronavirus","MERSvirus","Novalvirus"};
+      //
       int randomIndex = generator.nextInt(genuses.length);
 
       input.setType("Virus");

@@ -14,8 +14,9 @@ public class NovalHandler extends RouteBuilder {
         
         
         from("knative:channel/noval-handler")
-        .convertBodyTo(String.class)
+        .log("${body}")
         .to("kafka:my-topic?brokers="+KAFKA_ADDRESS);
+        
 
         
     }

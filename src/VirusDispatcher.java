@@ -20,22 +20,16 @@ public class VirusDispatcher extends RouteBuilder {
           .when().simple("${body.genuses} == 'Alphacoronavirus'")
             .marshal(jacksonDataFormat)
             .log("Alpha ${body}")
-             .to("knative:channel/alpha-handler")
-          .when().simple("${body.genuses} == 'Novalvirus'")
-             .marshal(jacksonDataFormat)
-             .log("MERS - ${body}")
-             .to("knative:channel/noval-handler")
+            .to("knative:channel/alpha-handler")
           .when().simple("${body.genuses} == 'MERSvirus'")
              .marshal(jacksonDataFormat)
              .log("MERS - ${body}")
              .to("knative:channel/mers-handler")
           .otherwise()
              .setBody().constant("{\"type\":\"Virus\", \"genuses\":\"Unknown\"}")
-             .log("Unknown - ${body}")
              .to("knative:channel/unknown-handler")
         
-    .end()
-    .marshal(jacksonDataFormat);
+    .end();
   }
 
   public static class SingalInput {
