@@ -13,7 +13,7 @@ public class VirusDispatcher extends RouteBuilder {
     jacksonDataFormat.setUnmarshalType(SingalInput.class);
     
 
-    from("knative:channel/humancontact")
+    from("knative:endpoint/humancontact")
     .unmarshal(jacksonDataFormat)
     .filter(simple("${header.CE-Type} == 'dev.knative.humancontact'"))
         .choice()

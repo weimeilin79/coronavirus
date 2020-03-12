@@ -19,7 +19,7 @@ public class SimulateSender extends RouteBuilder {
       .marshal(jacksonDataFormat)
       .setHeader("CE-Type", constant("dev.knative.humancontact"))
       .log("${body}")
-      .to("knative:channel/humancontact");
+      .to("knative:endpoint/humancontact");
   }
 
   public static SingalInput genRandoSingalInput(){

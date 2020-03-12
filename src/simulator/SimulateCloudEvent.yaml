@@ -2,7 +2,6 @@ apiVersion: sources.eventing.knative.dev/v1alpha1
 kind: CamelSource
 metadata:
   name: simulator-cloud
-  namespace: mydemo
 spec:
   source:
     flow:
