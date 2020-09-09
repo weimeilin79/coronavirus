@@ -1,4 +1,4 @@
-# Corona Virus Demo 
+# Corona Virus Demo
 
 ![](Outbreak.png)
 
@@ -22,7 +22,7 @@
 	|--Simulator
 		|--SimulatorSend (Send fake lab data)
 		|--Dashboard (Send notification to Dashboard)
-		|--SimulatorCloudEvent (RC 1- Problem with two Camel K 
+		|--SimulatorCloudEvent (RC 1- Problem with two Camel K
 		operators)
 -- ui
 ```
@@ -55,25 +55,31 @@ metadata:
   namespace: streams
 spec:
   kafka:
-    version: 2.3.0
-    replicas: 3
-    listeners:
-      plain: {}
-      tls: {}
     config:
       offsets.topic.replication.factor: 3
       transaction.state.log.replication.factor: 3
       transaction.state.log.min.isr: 2
-      log.message.format.version: '2.3'
+      log.message.format.version: '2.5'
+    version: 2.5.0
     storage:
       type: ephemeral
-  zookeeper:
     replicas: 3
+    listeners:
+      plain:
+        authentiation:
+          type: scram-sha-512
+      tls:
+        authentiation:
+          type: tls
+  entityOperator:
+    topicOperator:
+      reconciliationIntervalSeconds: 90
+    userOperator:
+      reconciliationIntervalSeconds: 120
+  zookeeper:
     storage:
       type: ephemeral
-  entityOperator:
-    topicOperator: {}
-    userOperator: {}
+    replicas: 3
 
 ```
 
@@ -93,15 +99,15 @@ metadata:
     strimzi.io/cluster: my-cluster
   namespace: streams
 spec:
-  partitions: 10
-  replicas: 3
   config:
     retention.ms: 604800000
     segment.bytes: 1073741824
+  partitions: 10
+  replicas: 3
 
 ```
 
-And also create the Knative Serving if not existed:
+Create the Knative Serving if not existed:
 
 ```bash
 cd setup
@@ -127,6 +133,36 @@ metadata:
  name: knative-serving
  namespace: knative-serving                       
 ```
+
+
+Create the Knative Eventing if not existed:
+
+```bash
+cd setup
+oc create -f knative_eventing_ns.yaml
+```
+
+```bash
+apiVersion: v1
+kind: Namespace
+metadata:
+ name: knative-eventing
+```
+
+```bash
+cd setup
+oc create -f knative_eventing.yaml
+```
+
+```bash
+apiVersion: operator.knative.dev/v1alpha1
+kind: KnativeEventing
+metadata:
+  name: knative-eventing
+  namespace: knative-eventing
+spec: {}            
+```
+
 
 Create namespece for the demo:
 
@@ -186,17 +222,18 @@ kamel run -d camel-jackson MersHandler.yaml
 kamel run -d camel-jackson UnknownHandler.groovy
 ```
 
+- Start dispatching virus result to handlers, under src/:
+
+```bash
+kamel run -d camel-jackson VirusDispatcher.java --dev
+```
+
+
 - Start sending in lab result, under src/simulator:
 
 ```bash
 kamel run -d camel-jackson -d camel-bean SimulateSender.java
 kamel run Dashboard.java
-```
-
-- Start dispatching virus result to handlers, under src/:
-
-```bash
-kamel run -d camel-jackson VirusDispatcher.java --dev
 ```
 
 - Go to Dashboard to see the virus
