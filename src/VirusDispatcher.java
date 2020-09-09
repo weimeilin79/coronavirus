@@ -13,9 +13,9 @@ public class VirusDispatcher extends RouteBuilder {
     jacksonDataFormat.setUnmarshalType(SingalInput.class);
     
 
-    from("knative:endpoint/humancontact")
+    from("knative:endpoint/VirusDispatcher")
+    .convertBodyTo(String.class) 
     .unmarshal(jacksonDataFormat)
-    .filter(simple("${header.CE-Type} == 'dev.knative.humancontact'"))
         .choice()
           .when().simple("${body.genuses} == 'Alphacoronavirus'")
             .marshal(jacksonDataFormat)
@@ -25,6 +25,10 @@ public class VirusDispatcher extends RouteBuilder {
              .marshal(jacksonDataFormat)
              .log("MERS - ${body}")
              .to("knative:channel/mers-handler")
+          .when().simple("${body.genuses} == 'Novalvirus'")
+             .marshal(jacksonDataFormat)
+             .log("NEW - ${body}")
+             .to("knative:channel/noval-handler")
           .otherwise()
              .setBody().constant("{\"type\":\"Virus\", \"genuses\":\"Unknown\"}")
              .to("knative:channel/unknown-handler")
