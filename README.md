@@ -6,7 +6,7 @@
 ## Folder Structure
 
 ```
---Setup
+--Setup (CRDs and k8s resources)
 -- src
 	|--VirusDispatcher	(Dispatch lab result to handlers through Channel)
 	|--channel (Knative Channel to receive events)
@@ -34,17 +34,20 @@ Install Operators
 1. AMQ Streams
 1. Camel K
 
+Create Project to setup AMQ Streams(Kafka):
 
-Create Project to setup AMQ Streams(Kafka)
-
-```
+```bash
 oc new-project streams
-
 ```
 
-Create the Kafka Cluster cluster under streams project
+Create the Kafka Cluster cluster under streams project:
 
+```bash
+cd setup
+oc create -f kafka_cluster.yaml
 ```
+
+```bash
 apiVersion: kafka.strimzi.io/v1beta1
 kind: Kafka
 metadata:
@@ -74,9 +77,14 @@ spec:
 
 ```
 
-And also create the Kafka Topic 
+And also create the Kafka Topic:
 
+```bash
+cd setup
+oc create -f kafka_topic.yaml
 ```
+
+```bash
 apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaTopic
 metadata:
@@ -93,34 +101,47 @@ spec:
 
 ```
 
-And also create the Knative Serving if not existed.
+And also create the Knative Serving if not existed:
 
+```bash
+cd setup
+oc create -f knative_serving_ns.yaml
 ```
+
+```bash
 apiVersion: v1
 kind: Namespace
 metadata:
  name: knative-serving
 ```
 
+```bash
+cd setup
+oc create -f knative_serving.yaml
 ```
+
+```bash
 apiVersion: serving.knative.dev/v1alpha1
 kind: KnativeServing
 metadata:
  name: knative-serving
- namespace: knative-serving
-                              
+ namespace: knative-serving                       
 ```
 
-Create namespece for the demo
+Create namespece for the demo:
 
-```
+```bash
 oc new-project outbreak
-
 ```
 
-Create Camel K Integration Platform
+Create Camel K Integration Platform:
 
+```bash
+cd setup
+oc create -f integration_platform.yaml
 ```
+
+```bash
 apiVersion: camel.apache.org/v1
 kind: IntegrationPlatform
 metadata:
@@ -129,72 +150,68 @@ metadata:
 spec: {}
 ```
 
-
 ## Install applications
 
-Setup Dashboard
+Setup Dashboard:
 
-```
+```bash
 oc new-app quay.io/weimeilin79/myui:latest
 oc expose service myui
 ```
 
-Get your Dashboad location
+Get your Dashboard location:
 
-```
+```bash
 oc get route
 ```
-
 
 ### Setup application
 
 #### Existing virus outbreak handler
 
-- Setup Channel, under src/channel
+- Setup Channel, under src/channel:
 
-```
-oc create -f channelalpha.yaml		
+```bash
+oc create -f channelalpha.yaml
 oc create -f channelmers.yaml
 oc create -f channelunknown.yaml
-oc create -f channelnoval.yaml		
+oc create -f channelnoval.yaml
 ```
 
-- Install the existing virus outbreak handler, under src/handlers
+- Install the existing virus outbreak handler, under src/handlers:
 
-```
+```bash
 kamel run -d camel-jackson AlphaHandler.java
 kamel run -d camel-jackson MersHandler.yaml
 kamel run -d camel-jackson UnknownHandler.groovy
 ```
 
+- Start sending in lab result, under src/simulator:
 
-- Start sending in lab result, under src/simulator
-
-```
-kamel run -d camel-jackson -d camel-bean SimulateSender.java 
+```bash
+kamel run -d camel-jackson -d camel-bean SimulateSender.java
 kamel run Dashboard.java
 ```
 
-- Start dispatching virus result to handlers, under src/
+- Start dispatching virus result to handlers, under src/:
 
-```
+```bash
 kamel run -d camel-jackson VirusDispatcher.java --dev
 ```
 
 - Go to Dashboard to see the virus
 
-
 #### Adding COVID-19 handler
 
-- Install the new COVID19 outbreak handler, under src/handlers
+- Install the new COVID19 outbreak handler, under src/handlers:
 
-```
+```bash
 kamel run -d camel-jackson NovalHandler.java
 ```
 
 - Update your VirusDispatcher.java under src/ add the following condition ***(You should be using DEV mode)***
 
-```
+```java
 	      .when().simple("${body.genuses} == 'Novalvirus'")
              .marshal(jacksonDataFormat)
              .log("MERS - ${body}")
