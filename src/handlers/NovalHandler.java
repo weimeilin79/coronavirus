@@ -7,7 +7,7 @@ import org.apache.camel.builder.RouteBuilder;
 
 public class NovalHandler extends RouteBuilder {
 
-    private final static String KAFKA_ADDRESS = "my-cluster-kafka-bootstrap.christina.svc:9092";
+    private final static String KAFKA_ADDRESS = "my-cluster-kafka-bootstrap.streams.svc:9092";
 
     @Override
     public void configure() throws Exception {
