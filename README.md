@@ -191,8 +191,10 @@ spec: {}
 Setup Dashboard:
 
 ```bash
-oc new-app quay.io/weimeilin79/myui:latest
-oc expose service myui
+oc new-app quay.io/weimeilin79/myui:latest --as-deployment-config
+oc delete svc myui
+oc expose dc myui --port=8080,8181
+oc expose svc myui
 ```
 
 Get your Dashboard location:
