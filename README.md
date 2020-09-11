@@ -86,7 +86,6 @@ spec:
 And also create the Kafka Topic:
 
 ```bash
-cd setup
 oc create -f kafka_topic.yaml
 ```
 
@@ -110,7 +109,6 @@ spec:
 Create the Knative Serving if not existed:
 
 ```bash
-cd setup
 oc create -f knative_serving_ns.yaml
 ```
 
@@ -122,7 +120,6 @@ metadata:
 ```
 
 ```bash
-cd setup
 oc create -f knative_serving.yaml
 ```
 
@@ -138,7 +135,6 @@ metadata:
 Create the Knative Eventing if not existed:
 
 ```bash
-cd setup
 oc create -f knative_eventing_ns.yaml
 ```
 
@@ -150,7 +146,6 @@ metadata:
 ```
 
 ```bash
-cd setup
 oc create -f knative_eventing.yaml
 ```
 
@@ -173,7 +168,6 @@ oc new-project outbreak
 Create Camel K Integration Platform:
 
 ```bash
-cd setup
 oc create -f integration_platform.yaml
 ```
 
